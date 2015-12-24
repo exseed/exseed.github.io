@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="-_.html"></a></li><li><a href="App.html">App</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_env">_env</a></li><li><a href="global.html#default">default</a></li><li><a href="global.html#env">env</a></li><li><a href="global.html#iterateApps">iterateApps</a></li><li><a href="global.html#registerApp">registerApp</a></li><li><a href="global.html#registerModel">registerModel</a></li><li><a href="global.html#renderPath">renderPath</a></li><li><a href="global.html#run">run</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import path from 'path';
+import fs from 'fs';
+import http from 'http';
+import express from 'express';
+import Waterline from 'waterline';
+import assign from 'object-assign';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { getEnv } from '../share/env';
+
+/**
+ * Private global variables
+ */
+
+// environment related variables
+const _env = getEnv();
+
+// registered app instances
+let _appInstances = {};
+
+// setting object
+let _appSettings = {};
+
+// waterline orm instance
+const _waterline = new Waterline();
+
+// the top level express app
+const _rootExpressApp = express();
+
+/**
+ * Private global functions
+ */
+
+// v1.0.x -> RoutingContext
+// v1.1.0 -> RouterContext
+// ref: https://github.com/rackt/react-router/blob/master/CHANGES.md
+let { match, RoutingContext } = require(path.join(_env.dir.projectRoot, 'node_modules/react-router'));
+
+/**
+ * @callback iterateCallback
+ * @param {string} appName - Current app name
+ * @param {object} exseedApp - Current app instance
+ */
+
+/**
+ * iterate through exseed apps
+ * @param {iterateCallback} cb - The callback when iterating
+ */
+let iterateApps = (cb) => {
+  for (let appName in _appInstances) {
+    let exseedApp = _appInstances[appName];
+    cb(appName, exseedApp);
+  }
+};
+
+export function renderComponent(component) {
+  const Helmet = require(
+    path.join(_env.dir.projectRoot, 'node_modules/react-helmet'));
+  // the order of generating `html` and `head` cannot be exchanged
+  // it's fucking weird...
+  const html = ReactDOMServer.renderToString(component);
+  const head = Helmet.rewind();
+  const title = head? head.title.toString(): '';
+  const meta = head? head.meta.toString(): '';
+  const link = head? head.link.toString(): '';
+  return (
+    '&lt;!DOCTYPE html>' +
+    '&lt;head>' +
+      title +
+      meta +
+      link +
+    '&lt;/head>' +
+    '&lt;body>' +
+      '&lt;div id="exseed_root">' +
+        html +
+      '&lt;/div>' +
+    '&lt;/body>'
+  );
+};
+
+/**
+ *
+ */
+export function renderPath(appName, url, cb) {
+  const exseedApp = _appInstances[appName];
+  const routesPath = path.join(
+    _env.dir.projectTarget, exseedApp.dir, 'routes.js');
+  const routes = require(routesPath).default;
+  match({
+    routes,
+    location: url,
+  }, (err, redirectLocation, renderProps) => {
+    if (renderProps) {
+      const component = &lt;RoutingContext {...renderProps} />;
+      const html = renderComponent(component);
+      cb(err, html);
+    } else {
+      cb(err, null);
+    }
+  });
+}
+
+/**
+ * Exported variables and functions
+ */
+
+export const env = _env;
+
+// waterline orm models
+export let models = null;
+
+export let middlewares = {
+  // expose express's `static` method
+  static: express.static,
+};
+
+/**
+ * App class
+ * @class
+ */
+export class App {
+  /**
+   * Generates a new express app,
+   * and mount it onto the top level express app
+   * @constructs App
+   */
+  constructor(app, name, dir) {
+    /**
+     * The express app
+     * @member App#expressApp
+     */
+    this.expressApp = app;
+    this.name = name;
+    this.dir = dir;
+    _rootExpressApp.use('/', this.expressApp);
+  }
+
+  init(models) {
+  }
+
+  routing(app, models) {
+  }
+
+  onError(err, req, res) {
+  }
+
+  getModules() {
+    return {};
+  }
+}
+
+export class Err {
+  constructor(message='Unnamed error', status=500) {
+    this.name = this.constructor.name;
+    this.message = message;
+    this.status = status;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+export class PageNotFound extends Err {
+  constructor(
+    msg='The url you are requesting does not exist',
+    status=404) {
+    super(msg, status);
+  }
+}
+
+export function load(appName) {
+  return _appInstances[appName].getModules();
+}
+
+/**
+ * Register an exseed app
+ * @param {string} appName - An identifier of exseed app
+ * @param {App} AppClass
+ *   - An exseed app class declaration extends from App
+ */
+export function registerApp(appName, appDir) {
+  let AppClass = require(
+    path.join(_env.dir.projectTarget, appDir, 'index.js')).default;
+  let newExpressApp = express();
+  const appInstance = new AppClass(newExpressApp, appName, appDir);
+  _appInstances[appName] = appInstance;
+  return appInstance;
+}
+
+export function getAppInstances(appName, appDir) {
+  return _appInstances;
+}
+
+/**
+ * Register a waterline model
+ * @param {object} schema - A waterline schema definition
+ */
+export function registerModel(schema) {
+  // add default value for the schema
+  assign(schema, {
+    connection: 'default',
+
+    /*
+     * migrate: 'alter'
+     *   adds and/or removes columns on changes to the schema
+     * migrate: 'drop'
+     *   drops all your tables and then re-creates them. All data is deleted.
+     * migrate: 'safe'
+     *   doesn't do anything on sails lift- for use in production.
+     */
+    migrate: schema.migrate || (
+      _env.env.development? 'alter':
+      _env.env.test? 'safe':
+      'safe'),
+  });
+  let collections = Waterline.Collection.extend(schema);
+  _waterline.loadCollection(collections);
+}
+
+/**
+ * @callback runCallback
+ * @param {object} err - An error object
+ * @param {object} models - All orm models
+ * @param {object} port - The listening port
+ */
+
+/**
+ * 1. Initialize waterline orm
+ * 2. Iterate through `init` member function of all registered exseed apps
+ *    and then exit when `EXSEED_INIT` is set
+ * 3. Iterate through `routing` member function of all registered exseed apps
+ *    and then launch the server when `EXSEED_INIT` is not set
+ * @param {object} customSettings - The global settings
+ * @param {runCallback} cb - The callback after serving
+ */
+export function run(customSettings, cb) {
+  assign(_appSettings, customSettings);
+
+  if (_env.watch) {
+    console.log('using livereload');
+
+    // dependencies for livereloading react
+    const webpack = require('webpack');
+    const config = require('../webpack/webpack.config.livereload');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const webpackHotMiddleware = require('webpack-hot-middleware');
+
+    // webpack compilation
+    let appArray = [];
+    iterateApps((appName, exseedApp) => {
+      const srcPath = path.join(
+        _env.dir.projectSrc, exseedApp.dir, 'flux/boot.js');
+      if (fs.existsSync(srcPath)) {
+        appArray.push(appName);
+        config.entry[appName] = [
+          srcPath,
+          'webpack-hot-middleware/client',
+        ];
+      }
+    });
+    config.output.path = _env.dir.projectTarget;
+    config.plugins.push(
+      new webpack.optimize.CommonsChunkPlugin('js/common.js', appArray)
+    );
+
+    let compiler = webpack(config);
+    _rootExpressApp.use(webpackDevMiddleware(compiler, {
+      noInfo: true,
+      publicPath: config.output.publicPath,
+    }));
+    _rootExpressApp.use(webpackHotMiddleware(compiler));
+  }
+
+  // initialize ORM
+  _waterline.initialize(_appSettings.db[_env.NODE_ENV], (err, ontology) => {
+    if (err) {
+      return cb(err);
+    }
+
+    // assign all models to exported variable
+    models = ontology.collections;
+
+    // initialize exseed app
+    if (_env.init) {
+      iterateApps((appName, exseedApp) => {
+        exseedApp.init(ontology.collections);
+      });
+      return;
+    }
+
+    // serve global static files
+    _rootExpressApp.use(express.static(
+      path.join(_env.dir.projectTarget, 'public')));
+
+    // serve app's static files
+    iterateApps((appName, exseedApp) => {
+      _rootExpressApp.use('/' + appName, express.static(
+        path.join(_env.dir.projectTarget, exseedApp.dir, 'public')));
+    });
+
+    // setup exseed app's routing rules
+    iterateApps((appName, exseedApp) => {
+      exseedApp.routing(exseedApp.expressApp, ontology.collections);
+    });
+
+    // render full page view
+    iterateApps((appName, exseedApp) => {
+      let app = exseedApp.expressApp;
+      const routesPath = path.join(
+        _env.dir.projectTarget, exseedApp.dir, 'routes.js');
+      if (fs.existsSync(routesPath)) {
+        const routes = require(routesPath).default;
+        app.get('/*', (req, res, next) => {
+          match({
+            routes,
+            location: req.url,
+          }, (err, redirectLocation, renderProps) => {
+            if (err) {
+              res.status(500).send(err.message);
+            } else if (redirectLocation) {
+              res.redirect(
+                302, redirectLocation.pathname + redirectLocation.search);
+            } else if (renderProps) {
+              // ref: https://github.com/rackt/react-router/issues/1414
+              const notFound = renderProps.components
+                .filter(component => component.isNotFound)
+                .length > 0;
+              if (notFound) {
+                next();
+              } else {
+                const component = &lt;RoutingContext {...renderProps} />;
+                res.status(200).send(renderComponent(component));
+              }
+            } else {
+              next();
+            }
+          });
+        });
+      }
+    });
+
+    // 404
+    _rootExpressApp.use((req, res, next) => {
+      next(new PageNotFound());
+    });
+
+    // error handling
+    _rootExpressApp.use((err, req, res, next) => {
+      if (err) {
+        iterateApps((appName, exseedApp) => {
+          exseedApp.onError(err, req, res);
+        });
+      }
+    });
+
+    // launch server
+    const port = process.env.PORT || _appSettings.server.port[_env.NODE_ENV];
+    _rootExpressApp.httpServer = http
+      .createServer(_rootExpressApp)
+      .listen(port, () => {
+        cb(null, ontology.collections, port);
+      })
+      .on('error', (err) => {
+        cb(err, ontology.collections, port);
+      });
+  });
+}
+
+/**
+ * To support both import ways:
+ *   import exseed from 'exseed';
+ *   import * as exseed from 'exseed';
+ */
+exports.default = module.exports;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Dec 25 2015 02:35:10 GMT+0800 (台北標準時間) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

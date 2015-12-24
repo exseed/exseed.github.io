@@ -1,0 +1,25 @@
+{
+  "name": "exseed.github.io",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "generate-docs": "node_modules/.bin/jsdoc --configure ./.jsdoc.json --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exseed/exseed.github.io.git"
+  },
+  "keywords": [
+    "exseed"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exseed/exseed.github.io/issues"
+  },
+  "homepage": "https://github.com/exseed/exseed.github.io#readme",
+  "dependencies": {
+    "jsdoc": "^3.4.0",
+    "minami": "^1.1.1"
+  }
+}
