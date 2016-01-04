@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>share/env.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a><ul class='methods'><li data-type='method'><a href="App.html#getModules">getModules</a></li><li data-type='method'><a href="App.html#init">init</a></li></ul></li><li><a href="Err.html">Err</a></li></ul><h3>Modules</h3><ul><li><a href="module-callback.html">callback</a></li><li><a href="module-library.html">library</a><ul class='methods'><li data-type='method'><a href="module-library.html#.getAppInstances">getAppInstances</a></li><li data-type='method'><a href="module-library.html#.load">load</a></li><li data-type='method'><a href="module-library.html#.registerApp">registerApp</a></li><li data-type='method'><a href="module-library.html#.registerModel">registerModel</a></li><li data-type='method'><a href="module-library.html#.renderComponent">renderComponent</a></li><li data-type='method'><a href="module-library.html#.renderPath">renderPath</a></li><li data-type='method'><a href="module-library.html#.run">run</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">share/env.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import path from 'path';
+
+/**
+ * @typedef {object} EnvInfo
+ * @property {string} NODE_ENV - current NODE_ENV
+ * @property {object} env
+ * @property {boolean} env.development - whether current running mode is `development`
+ * @property {boolean} env.test - whether current running mode is `test`
+ * @property {boolean} env.production - whether current running mode is `production`
+ * @property {string} dest - the target build folder relative to `&lt;project root>/build/`
+ * @property {boolean} watch - whether monitoring files changing
+ * @property {boolean} init - whether current running mode is to initialize apps
+ * @property {string} dir.projectRoot - the root directory of current project
+ * @property {string} dir.projectSrc - the source code directory of current project
+ * @property {string} dir.projectTarget - the build code directory of current project
+ * @property {object} errors - whether there are errors raised when parsing the environment
+ * @property {boolean} errors.ERR_NO_ENV - indicates that no running mode is specified
+ * @property {boolean} errors.ERR_MULTIPLE_ENV - indicates that multiple running modes are specified, which is forbidden
+ * @example
+ * {
+ *   NODE_ENV: 'development',
+ *   env: {
+ *     development: true,
+ *     test: false,
+ *     production: false
+ *   },
+ *   dest: 'debug',
+ *   watch: true,
+ *   init: false,
+ *   dir: {
+ *     projectRoot: '/Users/gocreating/projects/exseed/example',
+ *     projectSrc: '/Users/gocreating/projects/exseed/example/src',
+ *     projectTarget: '/Users/gocreating/projects/exseed/example/build/debug',
+ *   },
+ *   errors: {},
+ * }
+ */
+
+/**
+ * @ignore
+ * Return environment related variables,
+ * @return {EnvInfo}
+ */
+export function getEnv(cliOptions) {
+  let NODE_ENV = 'development';
+  let env = {};
+  let dest = 'debug';
+  let watch = false;
+  let init = false;
+  let dir = {};
+  let errors = {};
+
+  if (cliOptions !== undefined) {
+    // use in cli
+    env = {
+      development: cliOptions.development,
+      test:        cliOptions.test,
+      production:  cliOptions.production,
+    };
+
+    if (!env.development &amp;&amp;
+        !env.test &amp;&amp;
+        !env.production) {
+      // no option is specified
+      errors['ERR_NO_ENV'] = true;
+    } else if (!((env.development &amp;&amp; !env.test &amp;&amp; !env.production) ||
+                 (!env.development &amp;&amp; env.test &amp;&amp; !env.production) ||
+                 (!env.development &amp;&amp; !env.test &amp;&amp; env.production))) {
+      // multiple options are used
+      errors['ERR_MULTIPLE_ENV'] = true;
+    }
+
+    if (errors.ERR_NO_ENV ||
+        errors.ERR_MULTIPLE_ENV) {
+      env = {
+        development: true,
+        test: false,
+        production: false,
+      };
+    }
+
+    NODE_ENV = (env.development? 'development':
+                env.test?        'test':
+                                 'production');
+    watch = cliOptions.watch || watch;
+    init = cliOptions.init || init;
+
+  } else {
+    // use in lib
+    NODE_ENV = process.env.NODE_ENV || NODE_ENV;
+    env = {
+      development: NODE_ENV === 'development',
+      test:        NODE_ENV === 'test',
+      production:  NODE_ENV === 'production',
+    };
+    watch = (process.env.EXSEED_WATCH === 'true');
+    init = (process.env.EXSEED_INIT === 'true');
+  }
+
+  dest = (env.development? 'debug':
+          env.test?        'test':
+                           'release');
+
+  dir = {
+    projectRoot: process.cwd(),
+    projectSrc: path.join(process.cwd(), 'src'),
+    projectTarget: path.join(process.cwd(), 'build', dest),
+  };
+
+  return {
+    NODE_ENV: NODE_ENV,
+    env: env,
+    dest: dest,
+    watch: watch,
+    init: init,
+    dir: dir,
+    errors: errors,
+  };
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jan 05 2016 02:05:15 GMT+0800 (台北標準時間) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

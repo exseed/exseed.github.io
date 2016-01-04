@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a><ul class='methods'><li data-type='method'><a href="App.html#getModules">getModules</a></li><li data-type='method'><a href="App.html#init">init</a></li></ul></li><li><a href="Err.html">Err</a></li></ul><h3>Modules</h3><ul><li><a href="module-callback.html">callback</a></li><li><a href="module-library.html">library</a><ul class='methods'><li data-type='method'><a href="module-library.html#.getAppInstances">getAppInstances</a></li><li data-type='method'><a href="module-library.html#.load">load</a></li><li data-type='method'><a href="module-library.html#.registerApp">registerApp</a></li><li data-type='method'><a href="module-library.html#.registerModel">registerModel</a></li><li data-type='method'><a href="module-library.html#.renderComponent">renderComponent</a></li><li data-type='method'><a href="module-library.html#.renderPath">renderPath</a></li><li data-type='method'><a href="module-library.html#.run">run</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>Exseed</h1><p><a href="https://travis-ci.org/exseed/exseed"><img src="https://travis-ci.org/exseed/exseed.svg?branch=master" alt="Build Status"></a> <a href="https://badge.fury.io/js/exseed"><img src="https://badge.fury.io/js/exseed.svg" alt="npm version"></a></p>
+<p>A highly extensible nodejs framework</p>
+<h2>Features</h2><ul>
+<li>Highly Extensible</li>
+<li>Easy to Use</li>
+<li>Full Stack</li>
+<li>ORM Integrated</li>
+<li>ES6/ES7 Syntax</li>
+<li>Isomorphic</li>
+</ul>
+<h2>Workflow &amp; Implementation Details</h2><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build Tool</td>
+<td><a href="https://github.com/webpack/webpack">Webpack</a></td>
+</tr>
+<tr>
+<td>Automation</td>
+<td><a href="https://github.com/gulpjs/gulp">Gulp</a></td>
+</tr>
+<tr>
+<td>Backend</td>
+<td><a href="https://nodejs.org/en/">Node</a>, <a href="http://expressjs.com/">Express(&gt;=4.0.0)</a></td>
+</tr>
+<tr>
+<td>ORM</td>
+<td><a href="https://github.com/balderdashy/waterline">Waterline</a></td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td><a href="https://facebook.github.io/react/">React</a>, <a href="https://github.com/rackt/redux">Redux</a>/<a href="http://alt.js.org/">Alt</a>, <a href="https://github.com/rackt/react-router">React-Router</a></td>
+</tr>
+<tr>
+<td>Testing</td>
+<td><a href="https://mochajs.org/">Mocha</a></td>
+</tr>
+<tr>
+<td>CI</td>
+<td><a href="https://travis-ci.org/">Travis CI</a></td>
+</tr>
+</tbody>
+</table>
+<h2>Compare to Other Frameworks</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>Exseed</th>
+<th>Express</th>
+<th>Koa</th>
+<th>Sails</th>
+<th>Hapi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extensibility</td>
+<td>★★★★★</td>
+<td>★★★★★</td>
+<td>★★★★☆</td>
+<td>★★★★☆</td>
+<td>★★★★☆</td>
+</tr>
+<tr>
+<td>Threshold</td>
+<td>★★★☆☆</td>
+<td>★★☆☆☆</td>
+<td>★★★☆☆</td>
+<td>★★★★☆</td>
+<td>★★☆☆☆</td>
+</tr>
+<tr>
+<td>Build Speed</td>
+<td>★★★★★</td>
+<td>★☆☆☆☆</td>
+<td>★☆☆☆☆</td>
+<td>★★★★☆</td>
+<td>★☆☆☆☆</td>
+</tr>
+<tr>
+<td>Full Stack</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>Modern Syntax</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Isomorphic</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Usage</h2><ol>
+<li><p>Install CLI</p>
+<pre class="prettyprint source"><code>$ npm install -g exseed</code></pre></li>
+<li><p>Clone the <a href="https://github.com/exseed/exseed/tree/master/example">example project</a></p>
+</li>
+<li><p>Install dependencies</p>
+<pre class="prettyprint source"><code>$ cd example
+$ npm install</code></pre></li>
+<li><p>Run it</p>
+<pre class="prettyprint source"><code>$ sd serve --watch --development</code></pre></li>
+</ol>
+<h2>Example - Todo List</h2><p>We are going to show you how to write a todo app with exseed</p>
+<ol>
+<li><p>Register new app</p>
+<pre class="prettyprint source lang-js"><code>// &lt;project_root>/app.js
+
+import * as exseed from 'exseed';
+
+exseed.registerApp('core', './exseed.core');
+// ...
+exseed.registerApp('todo', './todoapp');
+// ...
+
+export default exseed;</code></pre></li>
+<li><p>Create database schema</p>
+<pre class="prettyprint source lang-js"><code>// &lt;todo_app>/models/todolist.js
+
+export default {
+ identity: 'todolist',
+ attributes: {
+   content: {
+     type: 'string',
+     required: true,
+   },
+ },
+};</code></pre></li>
+<li><p>The server side</p>
+<pre class="prettyprint source lang-js"><code>// &lt;todo_app>/settings.js
+
+export default {
+ name: 'todo',
+};</code></pre><pre class="prettyprint source lang-js"><code>// &lt;todo_app>/index.js
+
+import {
+ App,
+ registerModel
+} from 'exseed';
+
+class TodoApp extends App {
+ constructor(app, name, dir) {
+   super(app, name, dir);
+   registerModel(require('./models/todolist').default);
+ }
+
+ routing(app, models) {
+   app.get('/api/todolist', (req, res) => {
+     models.todolist
+       .find()
+       .then((todolist) => {
+         res.json(todolist);
+       });
+   });
+
+   app.post('/api/todolist', (req, res) => {
+     models.todolist
+       .create(req.body.todo)
+       .then((todo) => {
+         res.json(todo);
+       });
+   });
+ }
+};
+
+export default TodoApp;</code></pre></li>
+<li><p>The client side</p>
+<pre class="prettyprint source lang-js"><code>// &lt;todo_app>/routes.js
+
+import React from 'react';
+import { Route, IndexRoute } from 'react-router';
+
+import settings from './settings';
+import MainPage from './flux/views/pages/MainPage';
+
+export default (
+ &lt;Route path=&quot;/todo&quot; component={MainPage} EXSEED_APP_NAME={settings.name} />
+);</code></pre><pre class="prettyprint source lang-js"><code>// &lt;todo_app>/flux/views/pages/MainPage.js
+
+import React from 'react';
+import BaseLayout
+from '../../../../exseed.core/flux/views/layouts/BaseLayout';
+
+export default class MainPage extends React.Component {
+ ...
+
+ render() {
+   const scripts = [
+     'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+     '/todo/js/bundle.js',
+   ];
+
+   return (
+     &lt;BaseLayout
+       title=&quot;Exseed - Todo&quot;
+       scripts={scripts}>
+       &lt;h1>Todo&lt;/h1>
+       &lt;input
+         type=&quot;text&quot;
+         onKeyDown={this.handleKeyDown.bind(this)}
+         onChange={this.handleChange.bind(this)}
+         value={this.state.content} />
+       &lt;ul>
+         {this.state.todos.map(todo => (
+           &lt;li key={todo.id}>
+             {todo.content}
+           &lt;/li>
+         ))}
+       &lt;/ul>
+     &lt;/BaseLayout>
+   );
+ }
+};</code></pre></li>
+</ol>
+<p>See the complete <a href="https://github.com/exseed/exseed/tree/master/example/src/todoapp">todo app</a></p>
+<h2>Docs</h2><ul>
+<li><a href="http://exseed.github.io/docs/exseed/0.1.14">API Docs</a></li>
+<li><a href="https://github.com/exseed/exseed/blob/master/docs%2Fdeveloper%20guide.md">Developer Guide</a></li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jan 05 2016 02:05:15 GMT+0800 (台北標準時間) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

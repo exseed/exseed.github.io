@@ -2,6 +2,7 @@
     "source": {
         "include": [
             "../exseed/src/lib",
+            "../exseed/src/share",
             "../exseed/package.json",
             "../exseed/README.md"
         ],
